@@ -11,12 +11,19 @@ const socket = useMemo(() => io("http://localhost:3000"), []);
  const [room, setRoom]=useState("");
  const [socketID, setsocketID]=useState("");
 const [messages, setMessages] = useState([]);
+const [roomName, setroomName]=useState("");
 
 const handlesubmit = (e) => {
     e.preventDefault();
     socket.emit("message", {message, room});
-   
+    setMessage("");
+    setRoom("");
   };
+const joinhandler=(e)=>{
+  e.preventDefault(e);
+  socket.emit("join-room", roomName);
+  setroomName("");
+}
 
  useEffect(()=>{
   socket.on("connect", ()=>{
@@ -47,13 +54,23 @@ const handlesubmit = (e) => {
       <Typography variant='h4' color='success' component="div" gutterBottom>
         {socketID}
       </Typography>
+
+          <form onSubmit={joinhandler}>
+            <Typography variant='h4' >Enter Room Name</Typography>
+        <TextField value={roomName} id="outlined-basic" label="Room Name" variant='outlined' onChange={(e)=>setroomName(e.target.value )}/>
+          <Button type="submit" variant="contained" color="primary">
+          Join Room
+        </Button>
+      </form>
+      <br></br>
       <form onSubmit={handlesubmit}>
         <TextField value={message} id="outlined-basic" label="message" variant='outlined' onChange={(e)=>setMessage(e.target.value )}/>
           <TextField value={room} id="outlined-basic" label="room" variant='outlined' onChange={(e)=>setRoom(e.target.value )}/>
           <Button type="submit" variant="contained" color="primary">
-          Join
+          Send message
         </Button>
       </form>
+
         <Stack>
         {messages.map((m, i) => (
           <Typography key={i} variant="h4" color='primary' component="div" gutterBottom>

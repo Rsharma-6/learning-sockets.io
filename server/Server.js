@@ -14,12 +14,20 @@ const io = new Server(server, {
 io.on("connection",(Socket)=>{
     console.log("User Connected");
     console.log("ID", Socket.id);
+
     Socket.on("message", ({message,room})=>{
         console.log({message,room});
         io.to(room).emit("receive-message", message);   
      });
+
     Socket.emit("welcome",`welcome to the server`);
+
     Socket.broadcast.emit("welcome",`${Socket.id}  has joined the server`);
+
+    Socket.on("join-room", (room)=>{
+        Socket.join(room);
+    });
+
     Socket.on("disconnect", ()=>{
         console.log("user disconnected", Socket.id);
     });
